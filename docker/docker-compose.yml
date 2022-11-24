@@ -1,0 +1,16 @@
+version: '2'
+
+services: 
+  hugin_build:
+    image: u03013112/hugin_build:v1
+    container_name: 'hugin_build'
+    tty: true
+    volumes:
+        - ../:/src:cached
+    working_dir: /src/
+    network_mode: host
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "1"

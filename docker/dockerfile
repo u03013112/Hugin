@@ -1,0 +1,93 @@
+FROM centos:centos7
+RUN yum install -y wget
+# 写得这么碎就是为了可以快速继续，边尝试边写
+
+# cmake
+RUN yum -y install centos-release-scl \
+    && yum -y install devtoolset-8-gcc devtoolset-8-gcc-c++ devtoolset-8-binutils
+RUN yum -y install make
+
+RUN cd /home \
+    && wget https://cmake.org/files/v3.16/cmake-3.16.6.tar.gz \
+    && tar -zxvf cmake-3.16.6.tar.gz
+
+RUN yum install  -y openssl  openssl-devel
+
+RUN source scl_source enable devtoolset-8 \
+    && cd /home/cmake-3.16.6 \
+    && ./configure --prefix=/usr/local/cmake
+
+RUN source scl_source enable devtoolset-8 \
+    && cd /home/cmake-3.16.6 \
+    && make \
+    && make install
+
+RUN ln -s /usr/local/cmake/bin/cmake /usr/bin/cmake
+
+RUN yum install -y bzip2
+
+# wxWidgets
+RUN cd /home \
+    && wget https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.1/wxWidgets-3.2.1.tar.bz2 \
+    && tar xfv wxWidgets-3.2.1.tar.bz2
+
+RUN yum -y install gtk2-devel binutils-devel
+
+RUN source scl_source enable devtoolset-8 \
+    && cd /home/wxWidgets-3.2.1 \
+    && ./configure
+
+RUN source scl_source enable devtoolset-8 \
+    && cd /home/wxWidgets-3.2.1 \
+    && make \
+    && make install
+
+RUN cd /home \
+    && wget https://github.com/ukoethe/vigra/releases/download/Version-1-11-1/vigra-1.11.1-src.tar.gz \
+    && tar xzfv vigra-1.11.1-src.tar.gz
+
+# 这里暂时有问题，可能需要将环境去掉make
+RUN source scl_source enable devtoolset-8 \
+    && cd /home/vigra-1.11.1 \
+    && cmake -DWITH_OPENEXR=1 . \
+    && make \
+    && make install
+
+RUN yum install -y libtiff libtiff-devel
+RUN yum install -y turbojpeg-devel libjpeg-turbo-devel
+RUN yum install -y libpng-devel
+RUN yum install -y libopenexr OpenEXR-devel
+RUN yum install -y exiv2-devel
+RUN yum install -y glew-devel
+
+RUN cd /home \
+    && wget https://sourceforge.net/projects/panotools/files/libpano13/libpano13-2.9.21/libpano13-2.9.21.tar.gz/download --no-check-certificate \
+    && mv download libpano13-2.9.21.tar.gz \
+    && tar xzfv libpano13-2.9.21.tar.gz
+
+RUN yum install -y perl
+
+RUN source scl_source enable devtoolset-8 \
+    && cd /home/libpano13-2.9.21 \
+    && cmake . \
+    && make \
+    && make install
+
+RUN yum install -y lcms2-devel
+RUN yum install -y sqlite-devel
+RUN yum install -y boost-devel
+
+RUN yum install -y python3
+RUN yum install -y python3-devel
+
+RUN cd /home \
+    && wget https://sourceforge.net/projects/swig/files/swig/swig-4.1.0/swig-4.1.0.tar.gz/download --no-check-certificate \
+    && mv download swig-4.1.0.tar.gz \
+    && tar xzfv swig-4.1.0.tar.gz
+
+RUN yum install -y pcre2-devel
+
+RUN cd /home/swig-4.1.0 \
+    && ./configure CC=/opt/rh/devtoolset-8/root/usr/bin/gcc CXX=/opt/rh/devtoolset-8/root/usr/bin/g++ \
+    && make \
+    && make install
