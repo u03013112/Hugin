@@ -90,3 +90,17 @@ RUN cd /home/swig-4.1.0 \
     && ./configure CC=/opt/rh/devtoolset-8/root/usr/bin/gcc CXX=/opt/rh/devtoolset-8/root/usr/bin/g++ \
     && make \
     && make install
+
+RUN cd /home \
+    && wget https://sourceforge.net/projects/hugin/files/hugin/hugin-2022.0/hugin-2022.0beta1.tar.bz2/download --no-check-certificate \
+    && mv download hugin-2022.0beta1.tar.bz2 \
+    && tar xfv hugin-2022.0beta1.tar.bz2
+
+RUN cd /home \
+    && wget https://sourceforge.net/projects/hugin/files/hugin/hugin-2021.0/hugin-2021.0.0.tar.bz2/download --no-check-certificate \
+    && mv download hugin-2022.0beta1.tar.bz2 \
+    && tar xfv hugin-2022.0beta1.tar.bz2
+    
+RUN cd /home/wxWidgets-3.2.1 \
+    && make install \
+    && ldconfig
