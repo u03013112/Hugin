@@ -46,19 +46,18 @@ RUN cd /home \
     && wget https://github.com/ukoethe/vigra/releases/download/Version-1-11-1/vigra-1.11.1-src.tar.gz \
     && tar xzfv vigra-1.11.1-src.tar.gz
 
-# 这里暂时有问题，可能需要将环境去掉make
-RUN source scl_source enable devtoolset-8 \
-    && cd /home/vigra-1.11.1 \
-    && cmake -DWITH_OPENEXR=1 . \
-    && make \
-    && make install
-
 RUN yum install -y libtiff libtiff-devel
 RUN yum install -y turbojpeg-devel libjpeg-turbo-devel
 RUN yum install -y libpng-devel
 RUN yum install -y libopenexr OpenEXR-devel
 RUN yum install -y exiv2-devel
 RUN yum install -y glew-devel
+
+RUN source scl_source enable devtoolset-8 \
+    && cd /home/vigra-1.11.1 \
+    && cmake -DWITH_OPENEXR=1 . \
+    && make \
+    && make install
 
 RUN cd /home \
     && wget https://sourceforge.net/projects/panotools/files/libpano13/libpano13-2.9.21/libpano13-2.9.21.tar.gz/download --no-check-certificate \
