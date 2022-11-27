@@ -7,6 +7,6 @@ while :
         echo '----------------------------------------------------------------'
         fswatch -r -L -1 ${SRC}
         date
-        rsync -av --exclude={".git","*.pack"} ${SRC} ${DST}
+        rsync -av --exclude={".git/","*.pack"} ${SRC} ${DST}
         say 红鲤鱼与绿鲤鱼与驴
     done
