@@ -116,3 +116,15 @@ RUN source scl_source enable devtoolset-8 \
 
 RUN export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib64:/usr/local/lib
 
+# for build enblend
+RUN yum install -y gsl-devel
+
+RUN yum remove -y boost-devel
+
+RUN cd /home \
+    && wget https://boostorg.jfrog.io/artifactory/main/release/1.76.0/source/boost_1_76_0.tar.gz \
+    && tar xzfv boost_1_76_0.tar.gz
+
+RUN cd /home/boost_1_76_0 \
+    && ./bootstrap.sh --prefix=/opt/boost \
+    && ./b2 install --prefix=/opt/boost --with=all

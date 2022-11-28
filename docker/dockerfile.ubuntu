@@ -1,0 +1,58 @@
+FROM ubuntu:22.04
+
+RUN apt-get update
+RUN apt-cache search automake
+RUN apt-get install  -y build-essential autoconf automake libtool flex bison gdb \
+    libc6-dev libgcc1 cmake pkg-config help2man checkinstall
+
+RUN apt-get install -y subversion mercurial
+RUN apt-get install -y cmake-curses-gui
+# 这部分没看懂，为啥有个互动
+# RUN cd /home \
+#     && mkdir -p src \
+#     && apt-get install -y subversion-tools \
+#     && echo 'deb-src ftp://ftp.at.debian.org/debian ../project/experimental main' > /etc/apt/sources.list.d/debian-experimental.list \
+#     && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 55BE302B \
+#     && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 8B8D7663 \
+#     && apt-get update \
+#     && apt-get install -y devscripts
+
+# Building Libpano13
+RUN apt-get install -y zlib1g-dev libpng-dev libjpeg-dev libtiff-dev
+RUN mkdir -p /home/libpano \
+    && cd /home/libpano \
+    && hg clone http://hg.code.sf.net/p/panotools/libpano13 libpano.hg
+
+RUN cd /home/libpano \
+    && mkdir libpano.build \
+    && cd libpano.build \
+    && cmake ../libpano.hg -DCMAKE_INSTALL_PREFIX=/usr/local -DCPACK_BINARY_DEB:BOOL=ON \
+    -DCPACK_BINARY_NSIS:BOOL=OFF -DCPACK_BINARY_RPM:BOOL=OFF -DCPACK_BINARY_STGZ:BOOL=OFF \
+    -DCPACK_BINARY_TBZ2:BOOL=OFF -DCPACK_BINARY_TGZ:BOOL=OFF -DCPACK_BINARY_TZ:BOOL=OFF \
+    -DCMAKE_BUILD_TYPE=RelWithDebInfo 
+
+RUN cd /home/libpano \
+    && cd libpano.build \
+    && ls \
+    # && ./bootstrap \
+    && make \
+    && make install \
+    && ldconfig
+
+# Building Enblend
+RUN apt-get install -y libtiff-dev libopenexr-dev libboost-system-dev \
+  libboost-filesystem-dev libboost-graph-dev libboost-thread-dev \
+  freeglut3-dev libglew-dev libxi-dev libxmu-dev libplot-dev libgsl0-dev \
+  liblcms2-dev
+
+RUN apt-get install -y wget
+
+RUN cd /home \
+    && wget https://github.com/ukoethe/vigra/releases/download/Version-1-11-1/vigra-1.11.1-src.tar.gz \
+    && tar xzfv vigra-1.11.1-src.tar.gz
+
+RUN cd /home/vigra-1.11.1 \
+    && cmake -DWITH_OPENEXR=1 . \
+    && make \
+    && make install \
+    && ldconfig
