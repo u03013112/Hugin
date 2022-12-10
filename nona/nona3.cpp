@@ -700,3 +700,12 @@ int main(){
 
 //     return 0;
 // }
+
+
+extern "C" {
+    void testFunc(){
+        printf("testFunc start\n");
+        mainFunc();
+        printf("testFunc finish\n");
+    }
+}
